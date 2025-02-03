@@ -1,0 +1,11 @@
+[package]
+name = "victim-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tungstenite = "0.26.1"
+rand = "0.8"
+base64 = "0.22.1"
+
+

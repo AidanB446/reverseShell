@@ -1,0 +1,8 @@
+format of client message
+json string
+{id : message}
+handle message based on id
+if id is attacker send message over to victim client
+if if is victim client send message over to attacker
+end to end encryption
+
