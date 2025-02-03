@@ -1,19 +1,19 @@
 
-use std::process::{Command};
+use std::process::{Command, Stdio};
 
 fn main() {
 
-    let initial_command = r#"echo "hello" >>> file.txt "#.split(" ").collect::<Vec<&str>>();
+    let initial_command = r#"-a /usr/bin"#.split(" ").collect::<Vec<&str>>();
 
-    let mut output = Command::new("cmd")
+    let output = Command::new("ls")
+        .stdout(Stdio::piped())
         .args(initial_command)
         .spawn()
         .expect("Failed to execute command");
+        
 
-    let status = output.wait().unwrap();
+    let status = output.wait_with_output().unwrap();
 
-    println!("{:?}", status);
-
+    println!("Output {:?}", String::from_utf8(status.stdout).unwrap());
 }
-
 
