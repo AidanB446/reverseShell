@@ -57,6 +57,8 @@ func wsCliEndpoint(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("client connected")
 	
 	cli1 = Client{ws}
+	
+	// everything written to client needs to be base64 encoded string
 
 	err1 := ws.WriteMessage(1, []byte("websocket connected"))
 	handleErr(err1)
