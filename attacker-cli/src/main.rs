@@ -22,7 +22,8 @@ fn encode(inp : String) -> String {
 
 fn decode(inp : String) -> String {
     let inp = inp.replace("kq2ninazibgoabgbiasdfbngoiqnahxjagaeqiqyhhasdgkkha", "");
-    return String::from_utf8(BASE64_STANDARD.decode(inp).unwrap()).unwrap();
+    let inp = BASE64_STANDARD.decode(&inp).unwrap_or((&inp).to_string().into_bytes());
+    return String::from_utf8(inp).unwrap();
 }
 
 fn main() {
@@ -31,19 +32,22 @@ fn main() {
     drop(response);
     println!("connected to server");
     
-    let cli_message : String = String::from("this is from attacker");
-
-
-    socket.send(Message::text(cli_message)).unwrap();
-    socket.send(Message::text("this is from attacker".to_string())).unwrap();
-    socket.send(Message::text("this is from attacker too".to_string())).unwrap();
+    socket.send(Message::text("attacker connected".to_string())).unwrap();
     
     loop {
         let msg = socket.read().expect("Error reading message");        
-        println!("Recieved: {msg}");
-    }
+        println!(r#"Recieved: "{}""#, decode(msg.to_text().unwrap().to_string()));
     
+        // get user input from console, this will be malicous payload, and then encode it, send to
+        // server
+
+           
+
+
+
+
+    }
+
     // socket.close(None);
 }
-
 

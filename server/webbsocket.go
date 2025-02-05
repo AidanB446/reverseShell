@@ -35,8 +35,8 @@ func cliReader(conn *websocket.Conn) {
 		handleErr(err)	
 
 		userMessage := string(p)				
+	
 		// handle users message, write into file, send back to client
-
 		if att1.conn != nil {
 			err := cli1.conn.WriteMessage(1, []byte(userMessage))		
 			handleErr(err)

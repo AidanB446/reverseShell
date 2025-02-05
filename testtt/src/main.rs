@@ -1,19 +1,18 @@
 
-use std::process::{Command, Stdio};
+
+
+fn get_input() -> String {
+    let mut line = String::new();
+    let poss_err = std::io::stdin().read_line(&mut line); 
+
+    if poss_err.is_err() {
+        return "Failed to get Input".to_string();
+    } 
+
+    return line.parse().unwrap();
+}
 
 fn main() {
-
-    let initial_command = r#"-a /usr/bin"#.split(" ").collect::<Vec<&str>>();
-
-    let output = Command::new("ls")
-        .stdout(Stdio::piped())
-        .args(initial_command)
-        .spawn()
-        .expect("Failed to execute command");
-        
-
-    let status = output.wait_with_output().unwrap();
-
-    println!("Output {:?}", String::from_utf8(status.stdout).unwrap());
+    println!("{}", get_input());
 }
 

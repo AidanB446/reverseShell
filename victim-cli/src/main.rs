@@ -6,19 +6,27 @@ use std::process::{Command, Stdio};
 fn run(cmmd : String) -> String {
     
     // run the passed command and get output
-    
     let cmmd = cmmd.split(" ").collect::<Vec<&str>>();
     
     // replace command with cmd to run in windows
     let output = Command::new("command")
         .stdout(Stdio::piped())
         .args(cmmd)
-        .spawn() 
-        .expect("Failed to execute command");
-
-    let status = output.wait_with_output().unwrap();
+        .spawn();
     
-    return String::from_utf8(status.stdout).unwrap();
+    if output.is_err() {
+        return String::from("Command failed to execute");
+    }
+    
+    let output = output.expect("command failed to execute");
+
+    let status = output.wait_with_output();
+
+    if status.is_err() {
+        return String::from("Command Failed to execute"); 
+    }
+   
+    return String::from_utf8(status.unwrap().stdout).unwrap();
 }
 
 fn encode(inp : String) -> String {
@@ -41,7 +49,9 @@ fn encode(inp : String) -> String {
 
 fn decode(inp : String) -> String {
     let inp = inp.replace("kq2ninazibgoabgbiasdfbngoiqnahxjagaeqiqyhhasdgkkha", "");
-    return String::from_utf8(BASE64_STANDARD.decode(inp).unwrap()).unwrap();
+    let inp = BASE64_STANDARD.decode(&inp).unwrap_or((&inp).to_string().into_bytes());
+    return String::from_utf8(inp).unwrap(); 
+    // if base64 decode fails then return value
 }
 
 fn main() {
