@@ -16,7 +16,7 @@ func main() {
 	http.HandleFunc("/", ping)
 	http.HandleFunc("/wsCli", wsCliEndpoint)
 	http.HandleFunc("/wsAtt", attEndpoint)	
-
+	http.HandleFunc("/rCli", rEndpoint)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

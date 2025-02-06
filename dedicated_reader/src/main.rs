@@ -10,7 +10,7 @@ fn decode(inp : String) -> String {
 
 fn main() {
     
-    let (mut socket, response) = connect("ws://localhost:8080/wsCli").expect("Can't Connect");
+    let (mut socket, response) = connect("ws://localhost:8080/rCli").expect("Can't Connect");
     drop(response);
     println!("connected to server");
 

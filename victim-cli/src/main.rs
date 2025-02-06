@@ -3,15 +3,22 @@ use base64::prelude::*;
 use rand::Rng;
 use std::process::{Command, Stdio};
 
+
+// run command will change for windows. 
+// i think all we need to do for windows is change inital command to cmd
 fn run(cmmd : String) -> String {
     
     // run the passed command and get output
-    let cmmd = cmmd.split(" ").collect::<Vec<&str>>();
+    let mut cmmd = cmmd.split(" ").collect::<Vec<&str>>();
     
+    if cmmd.len() == 0 {
+        return String::from("No command given");
+    }
+
     println!("{:?}", cmmd);
 
     // replace command with cmd to run in windows
-    let output = Command::new("command")
+    let output = Command::new(cmmd.remove(0))
         .stdout(Stdio::piped())
         .args(cmmd)
         .spawn();
