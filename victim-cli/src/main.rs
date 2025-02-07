@@ -73,8 +73,6 @@ fn main() {
     
     loop {
         let msg = &socket.read().expect("Error reading message");        
-        // our decode function is throwing an error, maybe because input isnt encoded
-        // on servers
         let cmmd = decode((msg.to_text().unwrap()).to_string());
         let output = run(cmmd);
         socket.send(Message::text(encode(output).as_str())).unwrap();

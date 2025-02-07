@@ -26,25 +26,19 @@ var cli1 Client
 var att1 Client
 var rReader1 Client
 
-// every time cli sends message this function runs
-// for loop just makes sure it continues to run next time
 func cliReader(conn *websocket.Conn) {
-
-	// take message and log it into cli text file	
 	for {
 		_, p, err := conn.ReadMessage()		
-
 		handleErr(err)	
-
 		userMessage := string(p)				
-	
-		// handle users message, write into file, send back to client
-		if att1.conn != nil {
+		
+		// error protection incase rReader connections isnt yet established.
+		if rReader1.conn != nil {
 			err := rReader1.conn.WriteMessage(1, []byte(userMessage))		
 			handleErr(err)
 		}
-
-		fmt.Println("Client message recieved")
+		
+		fmt.Println("Client message recieved") // debug
 	}
 }
 
@@ -54,29 +48,23 @@ func wsCliEndpoint(w http.ResponseWriter, r *http.Request) {
 	
 	// create websocket connection, upgrade current http
 	ws, err := upgrader.Upgrade(w, r, nil)
+
 	handleErr(err)	
 
-	fmt.Println("client connected")
-	
-	cli1 = Client{ws}
-	
-	// everything written to client needs to be base64 encoded string
+	fmt.Println("client connected") // debug
 
+	cli1 = Client{ws}
 	err1 := ws.WriteMessage(1, []byte("websocket connected"))
 	handleErr(err1)
-	
 	cliReader(ws)
 }
 
 func attReader(conn *websocket.Conn) {
-
-	// take message and log it into cli text file	
 	for {
 		_, p, err := conn.ReadMessage()		
 		handleErr(err)	
 
 		userMessage := string(p)				
-		// handle users message, write into file, send back to client
 	
 		if cli1.conn != nil {
 			err := cli1.conn.WriteMessage(1, []byte(userMessage))		
@@ -105,15 +93,14 @@ func attEndpoint(w http.ResponseWriter, r *http.Request) {
 	attReader(ws)
 }
 
+// this will never be used. But if it isnt here websocket will break 
 func rReader(conn *websocket.Conn) {
 
-	// take message and log it into cli text file	
 	for {
 		_, p, err := conn.ReadMessage()		
 		handleErr(err)	
 
 		userMessage := string(p)				
-		// handle users message, write into file, send back to client
 		
 		fmt.Println("From Client", userMessage)
 	

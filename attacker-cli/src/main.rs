@@ -29,12 +29,6 @@ fn encode(inp : String) -> String {
     return output;
 }
 
-fn decode(inp : String) -> String {
-    let inp = inp.replace("kq2ninazibgoabgbiasdfbngoiqnahxjagaeqiqyhhasdgkkha", "");
-    let inp = BASE64_STANDARD.decode(&inp).unwrap_or((&inp).to_string().into_bytes());
-    return String::from_utf8(inp).unwrap();
-}
-
 fn main() {
     
     let (mut socket, response) = connect("ws://localhost:8080/wsAtt").expect("Can't Connect");
