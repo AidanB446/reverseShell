@@ -49,7 +49,7 @@ fn main() {
 
         println!("{:?}", cmmd);
 
-        // replace command with cmd to run in windows
+        // for unix replace with cmmd.remove(0) and get rid of arg
         let output = Command::new("powershell")
             .stdout(Stdio::piped())
             .arg("-Command")
