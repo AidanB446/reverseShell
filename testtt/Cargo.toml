@@ -1,9 +1,0 @@
-[package]
-name = "testtt"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-base64 = "0.22.1"
-
-

